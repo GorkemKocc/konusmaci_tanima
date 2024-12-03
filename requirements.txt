@@ -1,0 +1,7 @@
+librosa
+sounddevice
+scipy
+numpy
+pandas
+tensorflow
+keras
