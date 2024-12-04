@@ -1,76 +1,65 @@
 import os
+import librosa
 import numpy as np
-from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Dense, Dropout, BatchNormalization
-from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.callbacks import EarlyStopping
+from sklearn.svm import SVC
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+import joblib
+from feature_extraction import extract_features
 import matplotlib.pyplot as plt
-from feature_extraction import extract_features  # extract_features fonksiyonunu import ediyoruz
+
 
 def prepare_dataset(dataset_path):
-    data = []
+    """Eğitim verilerini hazırlar."""
+    features = []
     labels = []
-    speakers = os.listdir(dataset_path)
-    
-    for speaker in speakers:
-        speaker_folder = os.path.join(dataset_path, speaker)
-        if os.path.isdir(speaker_folder):
-            for filename in os.listdir(speaker_folder):
-                if filename.endswith(".wav"):
-                    file_path = os.path.join(speaker_folder, filename)
-                    features = extract_features(file_path)
-                    data.append(features)
+
+    for speaker in os.listdir(dataset_path):
+        speaker_path = os.path.join(dataset_path, speaker)
+        if os.path.isdir(speaker_path):
+            for file_name in os.listdir(speaker_path):
+                file_path = os.path.join(speaker_path, file_name)
+                if file_name.endswith('.wav'):
+                    print(f"Processing {file_path}")
+                    feature = extract_features(file_path)
+                    features.append(feature)
                     labels.append(speaker)
-    return np.array(data), np.array(labels)
+
+    # "Unknown" için rastgele gürültü özellikleri oluştur
+    unknown_features = np.random.normal(size=(50, 13))  # 50 bilinmeyen örnek
+    features.extend(unknown_features)
+    labels.extend(['Unknown'] * len(unknown_features))
+
+    return np.array(features), np.array(labels)
 
 # Veri setini hazırla
-X, y = prepare_dataset("dataset")
+dataset_path = 'dataset'
+X, y = prepare_dataset(dataset_path)
 
-# Etiketleri sayısal değerlere dönüştür
-encoder = LabelEncoder()
-y_encoded = encoder.fit_transform(y)
-y_categorical = to_categorical(y_encoded)
+# Etiketleri encode et
+label_encoder = LabelEncoder()
+y_encoded = label_encoder.fit_transform(y)
 
-# Eğitim ve test setlerine ayır
-X_train, X_test, y_train, y_test = train_test_split(X, y_categorical, test_size=0.2, random_state=42)
+# Verileri ölçekle
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
 
-# Modeli tanımla
-model = Sequential([
-    Dense(256, activation='relu', input_shape=(X.shape[1],)),
-    Dropout(0.3),
-    Dense(128, activation='relu'),
-    Dropout(0.3),
-    Dense(64, activation='relu'),
-    Dense(len(np.unique(y)), activation='softmax')
-])
+# Eğitim ve test setlerini ayır
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_encoded, test_size=0.2, random_state=42)
 
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+# Model oluştur ve eğit
+model = SVC(kernel='linear', probability=True)
+model.fit(X_train, y_train)
 
-# Modeli eğit
-history = model.fit(X_train, y_train, epochs=50, batch_size=16, validation_data=(X_test, y_test))
+# Model doğruluğunu kontrol et
+accuracy = model.score(X_test, y_test)
+print(f"Model accuracy: {accuracy * 100:.2f}%")
 
-# Modeli kaydet
-model.save("models/speaker_recognition_model.h5")
+save_dir = 'models'
+if not os.path.exists(save_dir):
+    os.makedirs(save_dir)
 
-
-# Eğitim ve doğrulama doğruluğunu görselleştirme
-plt.figure(figsize=(10, 5))
-plt.plot(history.history['accuracy'], label='Eğitim Doğruluğu')
-plt.plot(history.history['val_accuracy'], label='Doğrulama Doğruluğu')
-plt.title('Doğruluk Değişimi')
-plt.xlabel('Epoch')
-plt.ylabel('Doğruluk')
-plt.legend()
-plt.show()
-
-# Eğitim ve doğrulama kaybını görselleştirme
-plt.figure(figsize=(10, 5))
-plt.plot(history.history['loss'], label='Eğitim Kaybı')
-plt.plot(history.history['val_loss'], label='Doğrulama Kaybı')
-plt.title('Kayıp Değişimi')
-plt.xlabel('Epoch')
-plt.ylabel('Kayıp')
-plt.legend()
-plt.show()
+# Modeli, etiketleri ve ölçekleyiciyi kaydet
+joblib.dump(model, os.path.join(save_dir, 'speaker_recognition_model.pkl'))
+joblib.dump(label_encoder, os.path.join(save_dir, 'label_encoder.pkl'))
+joblib.dump(scaler, os.path.join(save_dir, 'scaler.pkl'))
