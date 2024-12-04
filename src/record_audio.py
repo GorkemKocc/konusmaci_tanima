@@ -20,11 +20,19 @@ def record_user_audio(username, duration=5, sample_rate=22050):
 
     # Kullanıcının okuyacağı örnek metinler
     example_texts = [
-        "Merhaba, bu benim ses kaydım. Konuşmacı tanıma uygulaması için kullanıyorum.",
-        "Bugün hava çok güzel, dışarıda yürüyüş yapmayı planlıyorum.",
+    "Merhaba, bu benim ses kaydım. Konuşmacı tanıma uygulaması için kullanıyorum."
+    "Bugün hava çok güzel ve güneş parlıyor.",
+    "Kahvaltıda çay içtim ve peynir yedim.",
+    "Yeni bir kitap aldım ve okumaya başladım.",
+    "Bilgisayarımı açtım ve çalışmaya başladım.",
+    "Yürüyüş yapmak iyi hissettiriyor ve enerji veriyor.",
+    "Telefonumun şarjı azalmış ve hemen taktım.",
+    "Arkadaşlarımla buluştum ve güzel bir sohbet ettik.",
+    "Marketten ekmek almayı unuttum ve geri döndüm.",
+    "Televizyonda haberleri izledim ve ilginç bilgiler öğrendim.",
+    "Yemek yapmak oldukça eğlenceli ve rahatlatıcı."
     ]
 
-    # Kullanıcıdan 3 örnek kayıt alın
     for i, text in enumerate(example_texts, start=1):
         print(f"\nKayıt {i}. Örnek için hazırlanıyor...")
         print(f"{username}, lütfen aşağıdaki metni okuyarak kaydı başlatın:")
