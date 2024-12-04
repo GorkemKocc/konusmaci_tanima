@@ -20,7 +20,7 @@ def record_user_audio(username, duration=5, sample_rate=22050):
 
     # Kullanıcının okuyacağı örnek metinler
     example_texts = [
-    "Merhaba, bu benim ses kaydım. Konuşmacı tanıma uygulaması için kullanıyorum."
+    "Merhaba, bu benim ses kaydım. Konuşmacı tanıma uygulaması için kullanıyorum.",
     "Bugün hava çok güzel ve güneş parlıyor.",
     "Kahvaltıda çay içtim ve peynir yedim.",
     "Yeni bir kitap aldım ve okumaya başladım.",
