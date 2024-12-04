@@ -1,3 +1,2 @@
-speaker1
-speaker2
-speaker3
+ekrem
+gorkem

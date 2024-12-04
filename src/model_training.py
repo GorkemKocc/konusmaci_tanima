@@ -1,12 +1,13 @@
 import os
 import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.layers import Dense, Dropout, BatchNormalization
 from tensorflow.keras.utils import to_categorical
-from feature_extraction import extract_features  # extract_features fonksiyonunu import ediyoruz
+from tensorflow.keras.callbacks import EarlyStopping
 import matplotlib.pyplot as plt
+from feature_extraction import extract_features  # extract_features fonksiyonunu import ediyoruz
 
 def prepare_dataset(dataset_path):
     data = []
@@ -48,11 +49,14 @@ model = Sequential([
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Modeli eğit
-history = model.fit(X_train, y_train, epochs=500, batch_size=16, validation_data=(X_test, y_test))
+history = model.fit(X_train, y_train, epochs=50, batch_size=16, validation_data=(X_test, y_test))
 
 # Modeli kaydet
 model.save("models/speaker_recognition_model.h5")
-# Doğruluk grafiği
+
+
+# Eğitim ve doğrulama doğruluğunu görselleştirme
+plt.figure(figsize=(10, 5))
 plt.plot(history.history['accuracy'], label='Eğitim Doğruluğu')
 plt.plot(history.history['val_accuracy'], label='Doğrulama Doğruluğu')
 plt.title('Doğruluk Değişimi')
@@ -61,7 +65,8 @@ plt.ylabel('Doğruluk')
 plt.legend()
 plt.show()
 
-# Kayıp grafiği
+# Eğitim ve doğrulama kaybını görselleştirme
+plt.figure(figsize=(10, 5))
 plt.plot(history.history['loss'], label='Eğitim Kaybı')
 plt.plot(history.history['val_loss'], label='Doğrulama Kaybı')
 plt.title('Kayıp Değişimi')
