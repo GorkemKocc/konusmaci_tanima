@@ -6,6 +6,7 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.utils import to_categorical
 from feature_extraction import extract_features  # extract_features fonksiyonunu import ediyoruz
+import matplotlib.pyplot as plt
 
 def prepare_dataset(dataset_path):
     data = []
@@ -47,7 +48,24 @@ model = Sequential([
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Modeli eğit
-model.fit(X_train, y_train, epochs=50, batch_size=16, validation_data=(X_test, y_test))
+history = model.fit(X_train, y_train, epochs=500, batch_size=16, validation_data=(X_test, y_test))
 
 # Modeli kaydet
 model.save("models/speaker_recognition_model.h5")
+# Doğruluk grafiği
+plt.plot(history.history['accuracy'], label='Eğitim Doğruluğu')
+plt.plot(history.history['val_accuracy'], label='Doğrulama Doğruluğu')
+plt.title('Doğruluk Değişimi')
+plt.xlabel('Epoch')
+plt.ylabel('Doğruluk')
+plt.legend()
+plt.show()
+
+# Kayıp grafiği
+plt.plot(history.history['loss'], label='Eğitim Kaybı')
+plt.plot(history.history['val_loss'], label='Doğrulama Kaybı')
+plt.title('Kayıp Değişimi')
+plt.xlabel('Epoch')
+plt.ylabel('Kayıp')
+plt.legend()
+plt.show()
