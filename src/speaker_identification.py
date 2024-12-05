@@ -41,6 +41,6 @@ def predict_speaker(file_path, model_path, label_encoder_path, scaler_path, thre
         raise ValueError("Model, predict_proba yöntemini desteklemiyor. Farklı bir sınıflandırıcı kullanın.")
 
 # Örnek kullanım
-file_to_predict = 'test/nazlı_test/nazlı_test_3.wav'
+file_to_predict = 'test/filiz_test/filiz_test_3.wav'
 predicted_speaker = predict_speaker(file_to_predict, 'speaker_recognition_model.pkl', 'label_encoder.pkl', 'scaler.pkl')
 print(f"Predicted speaker: {predicted_speaker}")
