@@ -4,5 +4,5 @@ sounddevice
 scipy
 numpy
 pandas
-sklearn
+scikit-learn
 matplotlib
