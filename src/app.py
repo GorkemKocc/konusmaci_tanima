@@ -28,6 +28,7 @@ def yeni_kullanici_kaydi():
     record_audio(username)  # Yeni ses kaydını oluştur
     print("Model yeniden eğitiliyor...")
     train_model()  # Modeli yeniden eğit
+    os.system('cls' if os.name == 'nt' else 'clear')
     print("Model eğitimi tamamlandı.")
     input("Devam etmek için bir tuşa basın.")
 
