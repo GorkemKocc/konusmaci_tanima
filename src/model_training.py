@@ -75,5 +75,3 @@ def train_model():
     joblib.dump(label_encoder, 'models/label_encoder_cnn.pkl')
 
     #print("Model ve label encoder başarıyla kaydedildi!")
-
-train_model()
